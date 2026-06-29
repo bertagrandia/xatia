@@ -1,0 +1,84 @@
+<div class="chat-container">
+
+  <!-- Header -->
+  <header class="chat-header">
+    <div class="header-left">
+      <h3>💬 Chat IA</h3>
+      <div class="room-meta">
+        <span class="room-code-label">Código: <strong>{{ roomCode() }}</strong></span>
+        <button class="btn-copy" (click)="copyCode()">
+          {{ codeCopied() ? '✓ Copiado' : 'Copiar' }}
+        </button>
+        <span class="role-badge" [class.owner]="role() === 'OWNER'">{{ role() }}</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <span class="conn-status" [class.online]="chatService.connected()">
+        {{ chatService.connected() ? '● Conectado' : '○ Desconectado' }}
+      </span>
+      @if (role() === 'OWNER') {
+        <button class="btn-danger" (click)="closeRoom()">Cerrar sala</button>
+      } @else {
+        <button class="btn-secondary" (click)="leaveRoom()">Salir</button>
+      }
+    </div>
+  </header>
+
+  <!-- Messages -->
+  <section class="messages-area">
+    @if (chatService.messages().length === 0) {
+      <div class="empty-state">
+        <p class="empty-icon">🧙</p>
+        <p>Comparte el código <strong>{{ roomCode() }}</strong> con tu compañero</p>
+        <p>Luego escribe tu primer mensaje para chatear con la IA</p>
+      </div>
+    }
+
+    @for (msg of chatService.messages(); track $index) {
+      @if (msg.type === 'system') {
+        <div class="msg-system">{{ msg.content }}</div>
+      }
+
+      @if (msg.type === 'user_message') {
+        <div class="msg-row" [class.mine]="msg.isMine" [class.theirs]="!msg.isMine">
+          <span class="msg-sender">{{ getSenderLabel(msg) }}</span>
+          <div class="msg-bubble user-bubble">{{ msg.content }}</div>
+        </div>
+      }
+
+      @if (msg.type === 'ai_message') {
+        <div class="msg-row ai-row">
+          <span class="msg-sender">IA 🤖</span>
+          <div class="msg-bubble ai-bubble">{{ msg.content }}</div>
+          @if (msg.tokens) {
+            <div class="token-info">🔢 {{ msg.tokens }} tokens usados</div>
+          }
+        </div>
+      }
+    }
+
+    <div #messagesEnd></div>
+  </section>
+
+  <!-- Input -->
+  <footer class="chat-footer">
+    <div class="input-row">
+      <input
+        type="text"
+        class="msg-input"
+        [(ngModel)]="messageInput"
+        (keyup.enter)="sendMessage()"
+        placeholder="Escribe un mensaje..."
+        [disabled]="!chatService.connected()"
+      />
+      <button
+        class="btn-send"
+        (click)="sendMessage()"
+        [disabled]="!chatService.connected() || !messageInput.trim()"
+      >
+        Enviar ➤
+      </button>
+    </div>
+  </footer>
+
+</div>

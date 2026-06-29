@@ -1,0 +1,86 @@
+<div class="rooms-container">
+  <header class="rooms-header">
+    <h1>💬 Chat IA</h1>
+    @if (authService.isAuthenticated()) {
+      <div class="user-info">
+        <span class="username-badge">{{ authService.currentUser()?.username }}</span>
+        <button class="btn-secondary" (click)="logout()">Cambiar nombre</button>
+      </div>
+    }
+  </header>
+
+  <main class="rooms-content">
+
+    <!-- Paso 1: elegir nombre -->
+    @if (!authService.isAuthenticated()) {
+      <div class="room-card">
+        <div class="card-icon">👤</div>
+        <h2>¿Cómo te llamas?</h2>
+        <p>Introduce tu nombre para entrar al chat</p>
+        <div class="join-form">
+          <input
+            type="text"
+            [(ngModel)]="usernameInput"
+            placeholder="Tu nombre..."
+            class="code-input"
+            maxlength="20"
+            (keyup.enter)="enterChat()"
+          />
+          <button
+            class="btn-primary"
+            (click)="enterChat()"
+            [disabled]="loading() || usernameInput.trim().length === 0"
+          >
+            Entrar
+          </button>
+        </div>
+        @if (error()) {
+          <p class="msg error">{{ error() }}</p>
+        }
+      </div>
+    }
+
+    <!-- Paso 2: crear o unirse -->
+    @if (authService.isAuthenticated()) {
+      <div class="room-card">
+        <div class="card-icon">🏰</div>
+        <h2>Crear sala</h2>
+        <p>Crea una sala y comparte el código con otro usuario</p>
+        <button class="btn-primary btn-block" (click)="createRoom()" [disabled]="loading()">
+          {{ loading() ? 'Creando...' : 'Crear nueva sala' }}
+        </button>
+      </div>
+
+      <div class="divider-text">— o —</div>
+
+      <div class="room-card">
+        <div class="card-icon">🔑</div>
+        <h2>Unirse a sala</h2>
+        <p>Introduce el código de 6 caracteres</p>
+        <div class="join-form">
+          <input
+            type="text"
+            [(ngModel)]="joinCode"
+            maxlength="5"
+            placeholder="AB123"
+            class="code-input"
+            (keyup.enter)="joinRoom()"
+            (input)="joinCode = joinCode.toUpperCase()"
+          />
+          <button
+            class="btn-primary"
+            (click)="joinRoom()"
+            [disabled]="loading() || joinCode.length < 5"
+          >
+            Unirse
+          </button>
+        </div>
+      </div>
+
+      @if (error()) {
+        <p class="msg error">{{ error() }}</p>
+      }
+    }
+
+  </main>
+</div>
