@@ -6,7 +6,7 @@ import os
 
 SECRET_KEY = os.getenv("SECRET_KEY", "dev-secret-key-change-in-production-abc123xyz")
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 120
+ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24  # 24 horas
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 

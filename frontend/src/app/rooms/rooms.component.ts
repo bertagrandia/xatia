@@ -56,6 +56,7 @@ export class RoomsComponent {
             state: { code: res.code, role: res.role },
           }),
         error: (err) => {
+          if (err.status === 401) { this.authService.logout(); return; }
           this.error.set(err.error?.detail || 'Error al crear la sala');
           this.loading.set(false);
         },
@@ -78,6 +79,7 @@ export class RoomsComponent {
             state: { code: res.code, role: res.role },
           }),
         error: (err) => {
+          if (err.status === 401) { this.authService.logout(); return; }
           this.error.set(err.error?.detail || 'Código de sala inválido');
           this.loading.set(false);
         },
