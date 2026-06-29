@@ -93,10 +93,13 @@ async def websocket_endpoint(
     role = "OWNER" if room.owner == username else "GUEST"
     await manager.connect(websocket, room_id, username, role)
 
-    await manager.broadcast(room_id, {
-        "type": "system",
-        "content": f"✅ {username} se ha unido a la sala",
-    })
+    # Anunciar solo la primera vez que el usuario entra
+    if username not in room.welcomed_users:
+        room.welcomed_users.add(username)
+        await manager.broadcast(room_id, {
+            "type": "system",
+            "content": f"✅ {username} se ha unido a la sala",
+        })
 
     try:
         while True:
@@ -109,19 +112,15 @@ async def websocket_endpoint(
                 if not content:
                     continue
 
-                # Broadcast to all room members
                 await manager.broadcast(room_id, {
                     "type": "user_message",
                     "content": content,
                     "sender": username,
                 })
 
-                # Include sender name so the AI knows who is speaking
                 room.chat_history.append({"role": "user", "content": f"{username}: {content}"})
 
-                # Get AI response
                 ai_text, tokens = await get_ai_response(content, room.chat_history)
-
                 room.chat_history.append({"role": "model", "content": ai_text})
 
                 await manager.broadcast(room_id, {
@@ -130,7 +129,16 @@ async def websocket_endpoint(
                     "tokens": tokens,
                 })
 
-            # ── Owner closes the room ─────────────────────────────────────────
+            # ── Usuario sale voluntariamente ──────────────────────────────────
+            elif msg_type == "leave_room":
+                await manager.disconnect(websocket, room_id)
+                await manager.broadcast(room_id, {
+                    "type": "system",
+                    "content": f"👋 {username} ha abandonado la sala",
+                })
+                break
+
+            # ── Owner cierra la sala ──────────────────────────────────────────
             elif msg_type == "close_room":
                 current_room = manager.get_room(room_id)
                 if current_room and current_room.owner == username:
@@ -144,11 +152,7 @@ async def websocket_endpoint(
                     break
 
     except WebSocketDisconnect:
-        left_user = await manager.disconnect(websocket, room_id)
-        if left_user:
-            await manager.broadcast(room_id, {
-                "type": "system",
-                "content": f"👋 {left_user} ha abandonado la sala",
-            })
+        # Refresh o cierre de pestaña — sin mensaje
+        await manager.disconnect(websocket, room_id)
     except Exception:
         await manager.disconnect(websocket, room_id)

@@ -71,6 +71,13 @@ export class ChatService {
     }
   }
 
+  leaveVoluntarily(): void {
+    if (this.ws?.readyState === WebSocket.OPEN) {
+      this.ws.send(JSON.stringify({ type: 'leave_room' }));
+    }
+    setTimeout(() => this.disconnect(), 100);
+  }
+
   disconnect(): void {
     this.ws?.close();
     this.ws = null;

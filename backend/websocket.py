@@ -24,7 +24,8 @@ class Room:
         self.owner = owner
         self.members: List[RoomMember] = []
         self.accepted_users: Set[str] = {owner}  # users allowed to connect
-        self.chat_history: List[dict] = []  # kept for Gemini context window
+        self.welcomed_users: Set[str] = set()    # users already announced
+        self.chat_history: List[dict] = []
 
     def add_member(self, member: RoomMember) -> None:
         self.members.append(member)

@@ -104,7 +104,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   leaveRoom() {
-    this.chatService.disconnect();
+    this.chatService.leaveVoluntarily();
     this.clearRoomState(this.roomId);
     this.router.navigate(['/rooms']);
   }
