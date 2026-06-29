@@ -112,6 +112,9 @@ async def websocket_endpoint(
                 if not content:
                     continue
 
+                trigger_ai = content.lower().startswith("/groq")
+                ai_query = content[5:].strip() if trigger_ai else ""
+
                 await manager.broadcast(room_id, {
                     "type": "user_message",
                     "content": content,
@@ -120,14 +123,15 @@ async def websocket_endpoint(
 
                 room.chat_history.append({"role": "user", "content": f"{username}: {content}"})
 
-                ai_text, tokens = await get_ai_response(content, room.chat_history)
-                room.chat_history.append({"role": "model", "content": ai_text})
-
-                await manager.broadcast(room_id, {
-                    "type": "ai_message",
-                    "content": ai_text,
-                    "tokens": tokens,
-                })
+                if trigger_ai:
+                    query = ai_query if ai_query else "Resume la conversación y responde"
+                    ai_text, tokens = await get_ai_response(query, room.chat_history)
+                    room.chat_history.append({"role": "model", "content": ai_text})
+                    await manager.broadcast(room_id, {
+                        "type": "ai_message",
+                        "content": ai_text,
+                        "tokens": tokens,
+                    })
 
             # ── Usuario sale voluntariamente ──────────────────────────────────
             elif msg_type == "leave_room":

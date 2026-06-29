@@ -68,7 +68,7 @@
         class="msg-input"
         [(ngModel)]="messageInput"
         (keyup.enter)="sendMessage()"
-        placeholder="Escribe un mensaje..."
+        placeholder="Escribe un mensaje... (usa /groq para preguntar a la IA)"
         [disabled]="!chatService.connected()"
       />
       <button
