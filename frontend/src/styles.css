@@ -19,7 +19,8 @@
   --owner-clr:  #bb86fc;
 }
 
-html, body { height: 100%; overflow: hidden; }
+html, body { height: 100%; }
+body { overflow-y: auto; }
 
 body {
   font-family: 'Segoe UI', system-ui, sans-serif;
@@ -201,6 +202,10 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
   flex-direction: column;
   height: 100vh;
   overflow: hidden;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  left: 0;
 }
 
 /* ── Header ── */
