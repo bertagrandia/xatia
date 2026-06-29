@@ -1,4 +1,3 @@
-import asyncio
 import random
 import string
 import uuid
@@ -27,7 +26,6 @@ class Room:
         self.accepted_users: Set[str] = {owner}  # users allowed to connect
         self.welcomed_users: Set[str] = set()    # users already announced
         self.chat_history: List[dict] = []
-        self.ai_task: Optional[asyncio.Task] = None
 
     def add_member(self, member: RoomMember) -> None:
         self.members.append(member)
