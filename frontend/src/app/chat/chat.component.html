@@ -71,7 +71,7 @@
         class="msg-input"
         [(ngModel)]="messageInput"
         (keyup.enter)="sendMessage()"
-        [placeholder]="chatService.aiActive() ? 'Escribe un mensaje... (IA activa 🤖)' : 'Escribe un mensaje... (/groq para activar IA)'"
+        [placeholder]="chatService.aiActive() ? 'Escribe un mensaje... (/groq para desactivar la IA)' : 'Escribe un mensaje... (/groq para activar la IA)'"
         [disabled]="!chatService.connected()"
       />
       <button
