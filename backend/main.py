@@ -120,14 +120,23 @@ async def websocket_endpoint(
 
                 room.chat_history.append({"role": "user", "content": f"{username}: {content}"})
 
-                ai_text, tokens = await get_ai_response(content, room.chat_history)
-                room.chat_history.append({"role": "model", "content": ai_text})
+                # Cancelar respuesta pendiente y reiniciar el debounce
+                if room.ai_task and not room.ai_task.done():
+                    room.ai_task.cancel()
 
-                await manager.broadcast(room_id, {
-                    "type": "ai_message",
-                    "content": ai_text,
-                    "tokens": tokens,
-                })
+                async def respond_after_pause(r=room, rid=room_id):
+                    await asyncio.sleep(2.5)
+                    ai_text, tokens = await get_ai_response(
+                        r.chat_history[-1]["content"], r.chat_history
+                    )
+                    r.chat_history.append({"role": "model", "content": ai_text})
+                    await manager.broadcast(rid, {
+                        "type": "ai_message",
+                        "content": ai_text,
+                        "tokens": tokens,
+                    })
+
+                room.ai_task = asyncio.create_task(respond_after_pause())
 
             # ── Usuario sale voluntariamente ──────────────────────────────────
             elif msg_type == "leave_room":
