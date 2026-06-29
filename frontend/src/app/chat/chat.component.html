@@ -13,6 +13,9 @@
       </div>
     </div>
     <div class="header-right">
+      <span class="ai-status-badge" [class.ai-on]="chatService.aiActive()">
+        {{ chatService.aiActive() ? '🤖 IA activa' : '🤖 IA inactiva' }}
+      </span>
       <span class="conn-status" [class.online]="chatService.connected()">
         {{ chatService.connected() ? '● Conectado' : '○ Desconectado' }}
       </span>
@@ -30,7 +33,7 @@
       <div class="empty-state">
         <p class="empty-icon">🧙</p>
         <p>Comparte el código <strong>{{ roomCode() }}</strong> con tu compañero</p>
-        <p>Luego escribe tu primer mensaje para chatear con la IA</p>
+        <p>Escribe <strong>/groq</strong> para activar o desactivar la IA</p>
       </div>
     }
 
@@ -68,7 +71,7 @@
         class="msg-input"
         [(ngModel)]="messageInput"
         (keyup.enter)="sendMessage()"
-        placeholder="Escribe un mensaje... (usa /groq para preguntar a la IA)"
+        [placeholder]="chatService.aiActive() ? 'Escribe un mensaje... (IA activa 🤖)' : 'Escribe un mensaje... (/groq para activar IA)'"
         [disabled]="!chatService.connected()"
       />
       <button

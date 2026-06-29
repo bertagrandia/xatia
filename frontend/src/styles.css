@@ -257,6 +257,21 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
 .conn-status { font-size: 0.8rem; color: var(--danger); }
 .conn-status.online { color: var(--success); }
 
+.ai-status-badge {
+  font-size: 0.78rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: #21262d;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+.ai-status-badge.ai-on {
+  background: #0d2a0d;
+  border-color: #2ecc71;
+  color: #2ecc71;
+}
+
 /* ── Messages ── */
 .messages-area {
   flex: 1;

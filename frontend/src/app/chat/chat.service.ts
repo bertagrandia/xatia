@@ -18,6 +18,7 @@ export class ChatService {
   messages = signal<ChatMessage[]>([]);
   connected = signal(false);
   roomClosed = signal(false);
+  aiActive = signal(false);
 
   constructor(private authService: AuthService) {}
 
@@ -36,8 +37,15 @@ export class ChatService {
     this.ws.onopen = () => this.connected.set(true);
 
     this.ws.onmessage = (event) => {
-      const msg: ChatMessage = JSON.parse(event.data);
+      const data = JSON.parse(event.data);
       const me = this.authService.currentUser()?.username;
+
+      if (data.type === 'ai_status') {
+        this.aiActive.set(data.active);
+        return;
+      }
+
+      const msg: ChatMessage = data;
 
       if (msg.type === 'user_message') {
         msg.isMine = msg.sender === me;
@@ -84,6 +92,7 @@ export class ChatService {
     this.messages.set([]);
     this.connected.set(false);
     this.roomClosed.set(false);
+    this.aiActive.set(false);
     this.currentRoomId = '';
   }
 
