@@ -1,5 +1,5 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://TU-BACKEND.onrender.com',
-  wsUrl: 'wss://TU-BACKEND.onrender.com',
+  apiUrl: 'https://xatia.onrender.com',
+  wsUrl: 'wss://xatia.onrender.com',
 };

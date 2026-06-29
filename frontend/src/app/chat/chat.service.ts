@@ -1,5 +1,6 @@
 import { Injectable, signal } from '@angular/core';
 import { AuthService } from '../auth/auth.service';
+import { environment } from '../../environments/environment';
 
 export interface ChatMessage {
   type: 'user_message' | 'ai_message' | 'system';
@@ -30,7 +31,7 @@ export class ChatService {
     // Cargar historial guardado
     this.messages.set(this.loadMessages(roomId));
 
-    this.ws = new WebSocket(`ws://localhost:8000/ws/${roomId}?token=${token}`);
+    this.ws = new WebSocket(`${environment.wsUrl}/ws/${roomId}?token=${token}`);
 
     this.ws.onopen = () => this.connected.set(true);
 

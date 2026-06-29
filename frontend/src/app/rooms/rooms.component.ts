@@ -69,7 +69,7 @@ export class RoomsComponent {
     this.error.set('');
 
     this.http
-      .post<RoomResponse>(`http://localhost:8000/rooms/join?token=${token}`, {
+      .post<RoomResponse>(`${environment.apiUrl}/rooms/join?token=${token}`, {
         code: this.joinCode.toUpperCase(),
       })
       .subscribe({
